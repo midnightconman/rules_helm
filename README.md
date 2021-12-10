@@ -2,7 +2,7 @@
 
 This repository contains Bazel rules to consume and produce Helm charts with Bazel.
 
-**NOTE:** This work was inspired by [https://github.com/tmc/rules_helm](https://github.com/tmc/rules_helm), but takes mostly the opposite focus of this repo... to execute (install, test, or delete) helm charts against a Kubernetes cluster. If you are looking for that pattern, please check out their repo.
+**NOTE:** This work was inspired by [https://github.com/tmc/rules_helm](https://github.com/tmc/rules_helm), which focuses on helm command execution (install, test, or delete) helm charts against a Kubernetes cluster. If you are looking for that pattern, please check out their repo.
 
 ## Documentation
 
@@ -20,13 +20,13 @@ In your Bazel `WORKSPACE` file add this repository as a dependency:
 ```
 RULES_HELM_VERSION = "0.1.0"
 
-RULES_HELM_CHECKSUM = ""
+RULES_HELM_CHECKSUM = "286f6fb3c02b3b02bef88c8aa483f07d7c12b45dcad247474dca3c03e5c95d15"
 
 http_archive(
     name = "com_github_midnightconman_rules_helm",
     sha256 = RULES_HELM_CHECKSUM,
     strip_prefix = "rules_helm-" + RULES_HELM_VERSION,
-    urls = ["https://github.com/midnightconman/rules_helm/archive/v" + RULES_HELM_VERSION + "tar.gz"],
+    urls = ["https://github.com/midnightconman/rules_helm/archive/v" + RULES_HELM_VERSION + ".tar.gz"],
 )
 ```
 
