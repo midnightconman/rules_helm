@@ -37,12 +37,5 @@ fi
 
 export HELM_HOME="$(pwd)/.helm"
 export PATH="$(dirname $BINARY):$PATH"
-#export HELM_TILLER_SILENT=true
-#helm init --client-only >/dev/null # helm v3 doesn't need this
-# Remove local repo to increase reproducibility and remove errors
-#helm repo list |grep -qc local && $BINARY repo remove local >/dev/null # helm v3 doesn't need this
-
-#helm plugin list | grep -qc tiller || $BINARY plugin install $(dirname $(rlocation __main__/external/helm_tiller/WORKSPACE))
-
 cd "${BUILD_WORKING_DIRECTORY:-}"
 helm $*
