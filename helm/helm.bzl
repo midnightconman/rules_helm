@@ -1,4 +1,5 @@
-load("@bazel_skylib//lib:paths.bzl", "paths")
+# TODO(midnightconman): verify we don't need this
+#load("@bazel_skylib//lib:paths.bzl", "paths")
 
 HELM_CMD_PREFIX = """
 echo "#!/usr/bin/env bash" > $@
