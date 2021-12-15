@@ -12,42 +12,83 @@ export HELM=\\$$(rlocation com_github_midnightconman_rules_helm/helm)
 PATH=\\$$(dirname \\$$HELM):\\$$PATH
 """
 
+# TODO(midnightconman): add an _impl here
+#def _impl(ctx):
+#    out_file = ctx.actions.declare_file("%s.dtree" % ctx.attr.name)
+#    ctx.actions.run(
+#        inputs = [ctx.file.deps],
+#        outputs = [out_file],
+#        executable = ctx.executable.dep_tool,
+#        progress_message = "Parsing Dependencies",
+#        arguments = [
+#            "--output_file=%s" % out_file.path,
+#            "--deps_file=%s" % ctx.file.deps.path,
+#        ],
+#    )
+#
+#    return [DefaultInfo(files = depset([out_file]))]
+#
+#_helm_package = rule(
+#    attrs = {
+#        "name": attr.label(
+#            mandatory = True,
+#            doc = "name",
+#        ),
+#        "templates": attr.label(
+#            mandatory = True,
+#            allow_single_file = True,
+#            doc = "Template files to be placed in the /template directory in the final chart",
+#        ),
+#    },
+#    implementation = _impl,
+#)
+
 # TODO(midnightconman): Add chart.yaml parameters and content option here
-def helm_package(name, srcs):
+def helm_package(name, templates, version = "0.0.0", requirements_yaml_content = ""):
     # TODO(midnightconman): Add dependency chart inclusion here
     """Defines a helm chart (directory containing a Chart.yaml).
 
     Args:
         name: A unique name for this rule.
-        srcs: Source files to include as the helm chart. Typically this will just be glob(["**"]).
-        update_deps: Whether or not to run a helm dependency update prior to packaging.
+        requirements_yaml_content: A string (optional) that can be used to specify chart dependencies.
+        version: A string in semantic version format, to set as the charts version.
+        templates: Source files to include as the helm chart. Typically this will just be glob(["**"]).
     """
-    filegroup_name = name + "_filegroup"
+    templates_filegroup_name = name + "_templates_filegroup"
     helm_cmd_name = name + "_package.sh"
     package_flags = ""
     native.filegroup(
-        name = filegroup_name,
-        srcs = srcs,
+        name = templates_filegroup_name,
+        srcs = templates,
     )
+
+    # TODO(midnightconman): convert this to ctx.action.run instead of a genrule
     native.genrule(
         name = name,
-        srcs = [filegroup_name],
+        srcs = [templates_filegroup_name],
         outs = ["%s_chart.tar.gz" % name],
         tools = ["@com_github_midnightconman_rules_helm//:helm"],
         # TODO(midnightconman): This should create a simple Chart.yaml if content is not provided
         cmd = """
-# find Chart.yaml in the filegroup
-CHARTLOC=missing
-for s in $(SRCS); do
-  if [[ $$s =~ .*Chart.yaml ]]; then
-    CHARTLOC=$$(dirname $$s)
-    break
-  fi
-done
-$(location @com_github_midnightconman_rules_helm//:helm) package {package_flags} $$CHARTLOC
+TMP=$$(mktemp -d)
+mkdir -p $$TMP/templates
+mv $(RULEDIR) $$TMP/templates
+mv $$TMP $(RULEDIR)
+
+# Write Chart.yaml
+echo "name: {name}
+version: {version}" > $(RULEDIR)/Chart.yaml
+
+# Write requirements.yaml
+echo "{requirements_yaml_content}" > $(RULEDIR)/requirements.yaml
+
+$(location @com_github_midnightconman_rules_helm//:helm) package {package_flags} $(RULEDIR)
 mv *tgz $@
 """.format(
+            name = name,
             package_flags = package_flags,
+            requirements_yaml_content = requirements_yaml_content,
+            version = version,
         ),
     )
 

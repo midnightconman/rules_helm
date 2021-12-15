@@ -18,9 +18,9 @@ This repository contains Bazel rules to consume and produce Helm charts with Baz
 In your Bazel `WORKSPACE` file add this repository as a dependency:
 
 ```
-RULES_HELM_VERSION = "0.1.0"
+RULES_HELM_VERSION = "0.1.2"
 
-RULES_HELM_CHECKSUM = "286f6fb3c02b3b02bef88c8aa483f07d7c12b45dcad247474dca3c03e5c95d15"
+RULES_HELM_CHECKSUM = "85efbfe6044568f4dcf825caf56c749b3520f73de45ace33988f409aaaa37d0f"
 
 http_archive(
     name = "com_github_midnightconman_rules_helm",
@@ -28,6 +28,10 @@ http_archive(
     strip_prefix = "rules_helm-" + RULES_HELM_VERSION,
     urls = ["https://github.com/midnightconman/rules_helm/archive/v" + RULES_HELM_VERSION + ".tar.gz"],
 )
+
+load("@com_github_midnightconman_rules_helm//:repos.bzl", "helm_repositories")
+
+helm_repositories()
 ```
 
 Then in your `BUILD` files include the `helm_package` and / or `helm_template` rules:
