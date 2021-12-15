@@ -11,7 +11,7 @@ This repository contains Bazel rules to consume and produce Helm charts with Baz
 ### API
 
 * helm_package - a helm chart in tar.gz format, with a `Chart.yaml` and any other metadata / config. helm_package targets can be used as dependencies for other helm_package declarations.
-* helm_template - expand a helm chart to a yaml formatted file.
+* ~helm_template - expand a helm chart to a yaml formatted file.~ coming very soon :D
 
 ### Getting started
 
