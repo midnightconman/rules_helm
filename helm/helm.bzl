@@ -45,13 +45,13 @@ PATH=\\$$(dirname \\$$HELM):\\$$PATH
 #)
 
 # TODO(midnightconman): Add chart.yaml parameters and content option here
-def helm_package(name, templates, version = "0.0.0", requirements_yaml_content = ""):
-    # TODO(midnightconman): Add dependency chart inclusion here
+# TODO(midnightconman): Figure out a safe way to support chart dependencies
+def helm_package(name, templates, chart_deps = "", version = "0.0.0"):
     """Defines a helm chart (directory containing a Chart.yaml).
 
     Args:
         name: A unique name for this rule.
-        requirements_yaml_content: A string (optional) that can be used to specify chart dependencies.
+        chart_deps: A string (optional) in yaml format that can be used to add remote chart dependencies. Please note this option doesn't work correctly yet.
         version: A string in semantic version format, to set as the charts version.
         templates: Source files to include as the helm chart. Typically this will just be glob(["**"]).
     """
@@ -67,7 +67,7 @@ def helm_package(name, templates, version = "0.0.0", requirements_yaml_content =
     native.genrule(
         name = name,
         srcs = [templates_filegroup_name],
-        outs = ["%s_chart.tar.gz" % name],
+        outs = ["%s-%s.tgz" % (name, version)],
         tools = ["@com_github_midnightconman_rules_helm//:helm"],
         # TODO(midnightconman): This should create a simple Chart.yaml if content is not provided
         cmd = """
@@ -80,15 +80,14 @@ mv $$TMP $(RULEDIR)
 echo "name: {name}
 version: {version}" > $(RULEDIR)/Chart.yaml
 
-# Write requirements.yaml
-echo "{requirements_yaml_content}" > $(RULEDIR)/requirements.yaml
+[[ ! -z "{chart_deps}" ]] && echo "dependencies:\n{chart_deps}" >> $(RULEDIR)/Chart.yaml
 
 $(location @com_github_midnightconman_rules_helm//:helm) package {package_flags} $(RULEDIR)
 mv *tgz $@
 """.format(
+            chart_deps = chart_deps,
             name = name,
             package_flags = package_flags,
-            requirements_yaml_content = requirements_yaml_content,
             version = version,
         ),
     )
