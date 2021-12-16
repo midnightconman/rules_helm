@@ -45,12 +45,13 @@ PATH=\\$$(dirname \\$$HELM):\\$$PATH
 #)
 
 # TODO(midnightconman): Add chart.yaml parameters and content option here
+# TODO(midnightconman): Figure out a safe way to support chart dependencies
 def helm_package(name, templates, chart_deps = "", version = "0.0.0"):
     """Defines a helm chart (directory containing a Chart.yaml).
 
     Args:
         name: A unique name for this rule.
-        chart_deps: A string (optional) in yaml format that can be used to add remote chart dependencies.
+        chart_deps: A string (optional) in yaml format that can be used to add remote chart dependencies. Please note this option doesn't work correctly yet.
         version: A string in semantic version format, to set as the charts version.
         templates: Source files to include as the helm chart. Typically this will just be glob(["**"]).
     """
