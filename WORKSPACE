@@ -1,8 +1,12 @@
 workspace(name = "com_github_midnightconman_rules_helm")
 
-load(":repos.bzl", "helm_repositories")
+load(":repos.bzl", "helm_repositories", "jq_repositories", "yq_repositories")
 
 helm_repositories()
+
+yq_repositories()
+
+jq_repositories()
 
 load("//tools:buildifier.bzl", "buildifier_repositories")
 
