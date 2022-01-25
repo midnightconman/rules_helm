@@ -60,8 +60,12 @@ def helm_package(name, templates, chart_deps = "", version = "0.0.0"):
         cmd = """
 TMP=$$(mktemp -d)
 mkdir -p $$TMP/templates
-mv $(RULEDIR) $$TMP/templates
-mv $$TMP $(RULEDIR)
+
+for f in $(SRCS) ; do
+  mv $$f $$TMP/templates/
+done
+
+mv $$TMP/templates $(RULEDIR)
 
 # Write Chart.yaml
 echo "name: {name}
