@@ -92,7 +92,7 @@ def helm_template(name, out, chart, values_files = [], values = None):
 
     Args:
         name: A unique name for this rule.
-        out: The output file
+        out: The output file (in json).
         chart: The chart defined by helm_package.
         values_files: The values.yaml files to supply for the release.
         values: A map of additional values to supply for the release.
@@ -119,15 +119,23 @@ def helm_template(name, out, chart, values_files = [], values = None):
         #srcs = [chart_filegroup_name] + [values_filegroup_name],
         srcs = [chart] + [values_filegroup_name],
         outs = [out],
-        tools = ["@com_github_midnightconman_rules_helm//:helm"],
+        tools = [
+            "@com_github_midnightconman_rules_helm//:helm",
+            "@com_github_midnightconman_rules_helm//:jq",
+            "@com_github_midnightconman_rules_helm//:yq",
+        ],
         cmd = """
 TMP=$$(mktemp -d)
-tar xzvf $(RULEDIR)/{chart} -C $$TMP
+TMP_JSON=$$(mktemp)
+tar xzf $(RULEDIR)/{chart} -C $$TMP
 rm $(RULEDIR)/{chart}
 
-CHARTLOC=$$(find $$TMP -name 'Chart.yaml' -exec dirname {{}} \\; )
+CHARTLOC=$$(find $$TMP -name 'Chart.yaml' -exec dirname {{}} ';' )
 
-$(location @com_github_midnightconman_rules_helm//:helm) template {name} $$CHARTLOC {template_flags} {set_params} {values_files} > $@
+$(location @com_github_midnightconman_rules_helm//:helm) template {name} $$CHARTLOC {template_flags} {set_params} {values_files} | \
+    $(location @com_github_midnightconman_rules_helm//:yq) eval-all -j | \
+    $(location @com_github_midnightconman_rules_helm//:jq) -s '.' > $@
+rm $$TMP_JSON
 """.format(
             name = name,
             chart = chart,
