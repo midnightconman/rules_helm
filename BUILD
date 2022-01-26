@@ -1,3 +1,5 @@
+# TODO(midnightconman): Convert this to a toolchain
+# more info can be found here: https://github.com/masmovil/bazel-rules/tree/master/toolchains
 sh_binary(
     name = "helm",
     srcs = ["helm.sh"],
@@ -23,6 +25,7 @@ sh_test(
     ],
 )
 
+# TODO(midnightconman): Convert these to toolchains
 sh_binary(
     name = "yq",
     srcs = ["yq.sh"],

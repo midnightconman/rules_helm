@@ -88,7 +88,7 @@ def _build_helm_set_args(values):
     return " ".join(set_args)
 
 def helm_template(name, out, chart, values_files = [], values = None):
-    """Expand a helm chart to a yaml formatted file.
+    """Expand a helm chart to a json formatted file.
 
     Args:
         name: A unique name for this rule.
