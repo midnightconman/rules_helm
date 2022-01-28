@@ -104,7 +104,7 @@ def helm_template(name, out, chart, values_files = [], values = None):
     value_srcs = []
     values_param = []
     for f in values_files:
-        values_param.append("--values=$(location %s)" % f)
+        values_param.append("--values=%s" % f.short_path)
         value_srcs.append(f)
 
     values_filegroup_name = name + "_values_filegroup"
