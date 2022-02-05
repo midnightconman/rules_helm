@@ -101,7 +101,7 @@ def helm_template(name, out, chart, values_files = [], values = None):
         set_params = _build_helm_set_args(values)
 
     # build --values param
-    value_srcs = []
+    value_srcs = ["@com_github_midnightconman_rules_helm//:runfiles_bash"]
     values_param = []
     for f in values_files:
         values_param.append("--values=$(location %s)" % f)
@@ -116,13 +116,14 @@ def helm_template(name, out, chart, values_files = [], values = None):
     # TODO(midnightconman): convert this to ctx.action.run instead of a genrule
     native.genrule(
         name = name,
-        #srcs = [chart_filegroup_name] + [values_filegroup_name],
         srcs = [chart] + [values_filegroup_name],
         outs = [out],
         tools = [
+            "@com_github_midnightconman_rules_helm//:runfiles_bash",
             "@com_github_midnightconman_rules_helm//:helm",
             "@com_github_midnightconman_rules_helm//:jq",
             "@com_github_midnightconman_rules_helm//:yq",
+            values_filegroup_name,
         ],
         cmd = """
 TMP=$$(mktemp -d)
