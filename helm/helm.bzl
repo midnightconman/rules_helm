@@ -1,6 +1,3 @@
-# TODO(midnightconman): verify we don't need this
-#load("@bazel_skylib//lib:paths.bzl", "paths")
-
 # TODO(midnightconman): add an _impl here
 #def _impl(ctx):
 #    out_file = ctx.actions.declare_file("%s.dtree" % ctx.attr.name)
@@ -55,7 +52,7 @@ def helm_package(name, templates, chart_deps = "", version = "0.0.0"):
         name = name,
         srcs = [templates_filegroup_name],
         outs = ["%s-%s.tgz" % (name, version)],
-        tools = ["@com_github_midnightconman_rules_helm//:helm"],
+        toolchains = ["@com_github_midnightconman_rules_helm//toolchains/helm:toolchain_type"].helminfo,
         # TODO(midnightconman): This should create a simple Chart.yaml if content is not provided
         cmd = """
 TMP=$$(mktemp -d)
@@ -119,11 +116,9 @@ def helm_template(name, out, chart, values_files = [], values = None):
         #srcs = [chart_filegroup_name] + [values_filegroup_name],
         srcs = [chart] + [values_filegroup_name],
         outs = [out],
-        tools = [
-            "@com_github_midnightconman_rules_helm//:helm",
-            "@com_github_midnightconman_rules_helm//:jq",
-            "@com_github_midnightconman_rules_helm//:yq",
-        ],
+        toolchains = ["@com_github_midnightconman_rules_helm//toolchains/helm:toolchain_type"].helminfo +
+                     ["@com_github_midnightconman_rules_helm//toolchains/jq:toolchain_type"].jqinfo +
+                     ["@com_github_midnightconman_rules_helm//toolchains/yq:toolchain_type"].yqinfo,
         cmd = """
 TMP=$$(mktemp -d)
 TMP_JSON=$$(mktemp)
