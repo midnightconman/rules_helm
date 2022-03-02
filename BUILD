@@ -31,7 +31,7 @@ sh_binary(
     srcs = ["yq.sh"],
     data = select({
         "@bazel_tools//src/conditions:linux_x86_64": ["@yq_linux//file"],
-        "@bazel_tools//src/conditions:darwin": ["@yq_osx//file"],
+        "@bazel_tools//src/conditions:darwin": ["@yq_darwin//file"],
     }),
     visibility = ["//visibility:public"],
     deps = ["@bazel_tools//tools/bash/runfiles"],
@@ -42,7 +42,7 @@ sh_binary(
     srcs = ["jq.sh"],
     data = select({
         "@bazel_tools//src/conditions:linux_x86_64": ["@jq_linux//file"],
-        "@bazel_tools//src/conditions:darwin": ["@jq_osx//file"],
+        "@bazel_tools//src/conditions:darwin": ["@jq_darwin//file"],
     }),
     visibility = ["//visibility:public"],
     deps = ["@bazel_tools//tools/bash/runfiles"],
